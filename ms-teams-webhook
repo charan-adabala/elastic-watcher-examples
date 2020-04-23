@@ -1,0 +1,21 @@
+"actions": {
+    "MS_TEAMS_PORT443": {
+      "transform": {
+        "script": {
+          "source": "def alerts=[];for(int i=0;i<ctx.payload.hits.hits.length;i++){def jobname = [ctx.payload.hits.hits[i]._source.jobName];def jobstream = [ctx.payload.hits.hits[i]._source.jobStream];def servername = [ctx.payload.hits.hits[i]._source.serverName];def alertmessage = [ctx.payload.hits.hits[i]._source.alertMessage];def data = ['jobname':jobname,'jobstream':jobstream,'servername':servername,'alertmessage':alertmessage];alerts.add(data)}return['_doc': alerts];",
+          "lang": "painless"
+        }
+      },
+      "webhook": {
+        "scheme": "https",
+        "host": "outlook.office.com",
+        "port": 443,
+        "method": "post",
+        "path": "/webhook/xxx",
+        "headers": {
+          "content-type": "application/json"
+        },
+       "body": """{"summary": "Alert", "text":"<html><table><tr><td>ServerName</td><td>JobStream</td><td>JobName</td><td>AlertMessage</td></tr>{{#ctx.payload._doc}}<tr><td>{{servername.0}}</td><td>{{jobstream.0}}</td><td>{{jobname.0}}</td><td>{{alertmessage.0}}</td></tr>{{/ctx.payload._doc}}</table></html>" }"""
+      }
+    }
+  }
